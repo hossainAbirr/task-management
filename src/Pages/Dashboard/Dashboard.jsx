@@ -22,6 +22,9 @@ import PropTypes from 'prop-types';
 import { Avatar, Backdrop, FormControl, InputLabel, MenuItem, Modal, Select, TextField } from '@mui/material';
 import useAuth from '../../hooks/useAuth';
 import AddForm from './AddTask/AddForm';
+import { useRef } from 'react';
+import Task from './AddTask/Task';
+import useTask from '../../hooks/useTask';
 
 const drawerWidth = 240;
 
@@ -78,7 +81,6 @@ const Fade = React.forwardRef(function Fade(props, ref) {
         onClick,
         onEnter,
         onExited,
-        ownerState,
         ...other
     } = props;
     const style = useSpring({
@@ -131,6 +133,8 @@ const Dashboard = () => {
     const [openModal, setOpenModal] = React.useState(false);
     const handleOpen = () => setOpenModal(true);
     const handleClose = () => setOpenModal(false);
+    const [tasks] = useTask();
+    const myRef = useRef();
 
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -197,24 +201,6 @@ const Dashboard = () => {
                                 src={user.photoURL}
                                 sx={{ width: 45, height: 45 }}
                             />
-                            {/* <FormControl sx={{ m: 1, minWidth: 80 }}>
-                                <InputLabel id="demo-simple-select-autowidth-label">Age</InputLabel>
-                                <Select
-                                    labelId="demo-simple-select-autowidth-label"
-                                    id="demo-simple-select-autowidth"
-                                    // value={age}
-                                    // onChange={handleChange}
-                                    autoWidth
-                                    label="Age"
-                                >
-                                    <MenuItem value="">
-                                        <em>None</em>
-                                    </MenuItem>
-                                    <MenuItem value={10}>Twenty</MenuItem>
-                                    <MenuItem value={21}>Twenty one</MenuItem>
-                                    <MenuItem value={22}>Twenty one and a half</MenuItem>
-                                </Select>
-                            </FormControl> */}
                         </>
                         }
                     </DrawerHeader>
@@ -250,35 +236,52 @@ const Dashboard = () => {
                         ))}
                     </List>
                 </Drawer>
+            </Box>
+            <DrawerHeader />
+            <Box component="main" sx={{ flexGrow: 1, p: 3, height: '100%' }} >
+                <div>
+                    {/* <Button onClick={handleOpen}>Open modal</Button> */}
+                    <Modal
+                        aria-labelledby="spring-modal-title"
+                        aria-describedby="spring-modal-description"
+                        open={openModal}
+                        onClose={handleClose}
+                        closeAfterTransition
+                        slots={{ backdrop: Backdrop }}
+                        slotProps={{
+                            backdrop: {
+                                TransitionComponent: Fade,
+                            },
+                        }}
+                    >
+                        <Fade in={openModal}>
+                            <Box sx={style}>
+                                <AddForm></AddForm>
+                            </Box>
+                        </Fade>
+                    </Modal>
+                </div>
 
-            </Box>
-            <Box>
-                <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-                    {/* <DrawerHeader /> */}
+                <div className='flex justify-around my-20'>
+                    {/* to do  */}
                     <div>
-                        {/* <Button onClick={handleOpen}>Open modal</Button> */}
-                        <Modal
-                            aria-labelledby="spring-modal-title"
-                            aria-describedby="spring-modal-description"
-                            open={openModal}
-                            onClose={handleClose}
-                            closeAfterTransition
-                            slots={{ backdrop: Backdrop }}
-                            slotProps={{
-                                backdrop: {
-                                    TransitionComponent: Fade,
-                                },
-                            }}
-                        >
-                            <Fade in={openModal}>
-                                <Box sx={style}>
-                                    <AddForm></AddForm>
-                                </Box>
-                            </Fade>
-                        </Modal>
+                        <h3>To Do</h3>
+                        {
+                            tasks.map((task, idx) => <Task key={idx} task={task}></Task>)
+                        }
                     </div>
-                </Box>
+                    <div>
+                        <h2>On going</h2>
+                    </div>
+                    <div>
+                        <h2>Completed</h2>
+                    </div>
+                </div>
             </Box>
+
+
+            {/* <Box>
+            </Box> */}
         </Box>
     );
 }
